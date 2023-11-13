@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<!--<       style.css> -->
+<!-- endereço do bootstrap https://getbootstrap.com/ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</head>
+<body>
+    <style>
+
+    </style>
+    <div class="container-fluid">
+        <h1 class="text-center">Cálculadora Salário Líquido</h1>
+        <div class="form-group">
+            <label for="SalBruto">Salário Bruto: </label>
+            <input type="text" class="form-control" name="SalBruto" id="SalBruto" required>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="button" onclick="salliq()">Calcular</button>
+        </div>
+        <div class="form-group">
+            <label for="inss">INSS: </label>
+            <input type="text" class="form-control" name="inss" id="inss">
+        </div>
+        <div class="form-group">
+            <label for="ir">IR: </label>
+            <input type="text" class="form-control" name="ir" id="ir">
+        </div>
+        <div class="form-group">    
+            <label for="SalLiq">Salário Líquido: </label>
+            <input type="text" class="form-control" name="SalLiq" id="SalLiq">
+        </div>
+    </div>
+ <script>
+// Calculo de IR
+    // INSS = Salario Bruto * %Desconto
+    // SB = Salario Bruto - INSS
+    // IR = Salario Base (SB) * %Desconto - Desconto Padrão
+    // SalLiq = SB - INSS - IR
+    
+    // Tabela INSS
+    //    0    - 1320.00  7.5%   0.00
+    // 1320.01 - 2571.29  9.0%  19.80
+    // 2571.30 - 3845.94 12.0%  96.94
+    // 3856.95 - 7507.49 14.0% 174.08
+    // acima 7507.49   1051.05
+
+    // Tabela IR
+    // 0       - 2112.00  0.0%    0.00
+    // 2112.01 - 2826.65  7.5%  158.40
+    // 2826.66 - 3751.06 15.0%  370.40
+    // 3751.07 - 4664.68 22.5%  651.73
+    // Acima de 4664.68  27.5%  884.96
+
+    function inss(SalBruto) {
+
+        var inss=0;
+        // SalBruto=1000  inss=75
+        if(SalBruto > 0 && SalBruto <= 1320.0) {
+            percinss = 0.075;  
+            descinss = 0.0;
+        }
+        // SalBruto=2000 inss=160.20
+        if(SalBruto > 1320.0 && SalBruto <= 2571.29) {
+            percinss = 0.09;
+            descinss = 19.80;
+        }
+        // SalBruto=3000 inss=263.06
+        if(SalBruto > 2571.29 && SalBruto <= 3845.94) {
+            percinss = 0.12;
+            descinss = 96.94;
+        }
+        // SalBruto=5000 inss=525.92
+        if(SalBruto > 3845.94 && SalBruto <= 7507.49) {
+            percinss = 0.14;
+            descinss = 174.08;
+        }
+        // SalBruto=8000 inss=1051.05
+        if(SalBruto > 7507.49) {
+            percinss = 0.14;
+            descinss = 174.08;
+        }
+        inss = SalBruto * percinss - descinss;
+        if(SalBruto>7507.49) {
+            inss=1051.05;
+        }
+//        inss=Math.floor(inss*100)/100;
+        inss=inss.toFixed(2);
+        return inss;
+
+    }
+
+    function ir(SalBruto) {
+
+        var SalBase=0.0;
+        var vrinss=0.0;
+        vrinss=inss(SalBruto);
+        SalBase = SalBruto - vrinss;
+
+        var ir=0;
+        // SalBruto=1000 inss=75 SalBase=925.00  ir=0.00
+        if(SalBase > 0 && SalBase <= 2112.00) {
+            percir = 0.0;  
+            descir = 0.0;
+        }
+        // SalBruto=2500 inss=205.20 SalBase=2294.8 ir=13.71
+        if(SalBase > 2112.00 && SalBase <= 2826.65) {
+            percir = 0.075;
+            descir = 158.40;
+        }
+        // SalBruto=3500 inss=323.06 SalBase=3176.94  ir=106.141
+        if(SalBase > 2826.65 && SalBase <= 3751.06) {
+            percir = 0.15;
+            descir = 370.40;
+        }
+        // SalBruto=5000 inss=525.92 SalBase=4474.08 ir=354.938
+        if(SalBase > 3751.06 && SalBase <= 4664.68) {
+            percir = 0.225;
+            descir = 651.73;
+        }
+        // SalBruto=8000 inss=1051.05 SalBase=6948.95 ir=1026.00125
+        if(SalBase > 4664.68) {
+            percir = 0.275;
+            descir = 884.96;
+        }
+        ir = SalBase * percir - descir;
+  //      ir=Math.floor(ir*100)/100;
+        ir=ir.toFixed(2);
+        return ir;
+
+}
+
+    function salliq() {
+        var SalBruto=document.getElementById("SalBruto").value;
+        var vrinss=inss(SalBruto);
+        var vrir=ir(SalBruto);
+        var SalLiq = SalBruto - vrinss - vrir;
+        document.getElementById("inss").value = vrinss;
+        document.getElementById("ir").value = vrir;
+        document.getElementById("SalLiq").value = SalLiq;
+    
+    
+    }
+
+
+ </script>   
+</body>
+</html>
