@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste</title>
+</head>
+<body>
+   <label for="SalBruto">Salário Bruto: </label>
+   <input type="text" name="SalBruto" id="SalBruto" required>
+   <button type="button" onclick="salliq()">Calcular</button>
+   <label for="inss">INSS: </label>
+   <input type="text" name="inss" id="inss">
+   <label for="ir">IR: </label>
+   <input type="text" name="ir" id="ir">
+   <label for="SalLiq">Salário Líquido: </label>
+   <input type="text" name="SalLiq" id="SalLiq">
+
+
+<script>
+/*
+    console.log("Alo Mundo!");
+    const PI = 3.141592;
+    const const1 = "Alo Mundo!";
+    let let1 = "Alo Mundo!";
+    var var1="Alo Mundo!";
+    var var1="Alo Marte!";
+    var num1=10;
+    var num2=45.65;
+    var arr1=[3,4,5,6];
+    var arr2=[
+        [1,"email1@educ.com"],
+        [2,"email2@educ.com"],
+        [3,"email3@educ.com"]
+    ];
+
+
+    alert(let1);
+    console.log(var1);
+    console.log(arr1[2]);
+    console.log(arr2[1][1]);
+
+    for(i=0;i<arr1.length;i++) {
+        console.log(arr1[i]);   
+    }
+
+    i=0;
+    while(i<arr1.length) {
+        console.log(arr1[i]);
+        i++;
+    }
+
+    if(i==4) {
+        console.log("i=4");
+    }
+    else {
+        console.log("i!=4");
+    }
+*/
+
+    // Calculo de IR
+    // INSS = Salario Bruto * %Desconto
+    // SB = Salario Bruto - INSS
+    // IR = Salario Base (SB) * %Desconto - Desconto Padrão
+    
+    // Tabela INSS
+    //    0    - 1320.00  7.5%   0.00
+    // 1320.01 - 2571.29  9.0%  19.80
+    // 2571.30 - 3845.94 12.0%  96.94
+    // 3856.95 - 7507.49 14.0% 174.08
+    // acima 7507.49   1051.05
+
+    // Tabela IR
+    // 0       - 2112.00  0.0%    0.00
+    // 2112.01 - 2826.65  7.5%  158.40
+    // 2826.66 - 3751.06 15.0%  370.40
+    // 3751.07 - 4664.68 22.5%  651.73
+    // Acima de 4664.68  27.5%  884.96
+
+    // Salario Bruto = 20000
+    // INSS = 7507.49 * 0.14 = 1051.05
+    // SB = 20000 - 1051.05 = 18948.95
+    // IR = 18948.95 * 0.275 - 884.96 = 5210.96 - 884.96 = 4326,00
+
+   function calcinss() {
+      // INSS
+      SalBruto = document.getElementById("SalBruto").value;
+      var percINSS=0.075;
+      var descinss=0;
+
+      if(SalBruto>1320) {
+         if(SalBruto>2571.29) {
+            if(SalBruto>3845.94) {
+               if(SalBruto>7507.49) {
+                  percINSS=0.14;
+                  descinss=174.08;
+               }
+               else {
+                  percINSS=0.14;
+                  descinss=174.08;
+               }
+            }
+            else {
+               percINSS=0.12;
+               descinss= 96.94;
+            }
+         } 
+         else {
+            percINSS=0.09;
+            descinss=19.80;
+         }
+      }
+      INSS = SalBruto*percINSS-descinss;
+      if(INSS>1051.05) {
+         INSS=1051.05;
+      }
+//      alert(INSS);
+      INSS = Math.floor(INSS*100);
+      INSS=INSS/100;
+
+      document.getElementById("inss").value=INSS;
+      return INSS;
+    }
+
+    function calcir() {
+      // IR
+      SalBruto=document.getElementById("SalBruto").value;
+      inss=calcinss(SalBruto);
+      SalBase = SalBruto-inss;
+
+      var percIR=0;
+      var descir=0;
+      if(SalBase>2112.00) {
+         if(SalBase>2826.65) {
+            if(SalBase>3751.06) {
+               if(SalBase>4664.68) {
+                  percIR=0.275; 
+                  descir=884.96;
+               }
+               else {
+                  percIR=0.225; 
+                  descir=651.73;
+               }
+            }
+            else {
+               percIR=0.15; 
+               descir=370.40;
+            }
+         } 
+         else {
+            percIR=0.075;
+            descir=158.40;
+         }
+      }
+      IR=SalBase * percIR - descir;
+      IR = Math.floor(IR*100);
+      IR=IR/100;
+
+      document.getElementById("ir").value = IR;
+      return IR;
+    }
+
+    function salliq() {
+      inss=calcinss();
+      ir=calcir();
+      SalLiq=SalBruto-inss-ir;
+      document.getElementById("SalLiq").value = SalLiq;
+      return SalLiq;
+    }
+
+    var SalLiq = 0;
+
+    SalLiq = salliq(SalBruto);
+
+    console.log(SalLiq);
+
+    
+</script>    
+</body>
+</html>

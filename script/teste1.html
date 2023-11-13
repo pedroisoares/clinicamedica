@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Conteúdo aqui -->
+    <h1>Cálculadora Salário Líquido</h1>
+    <label for="SalBruto">Salário Bruto: </label>
+    <input type="text" name="SalBruto" id="SalBruto" required>
+    <button class="btn btn-primary" type="button" onclick="salliq()">Calcular</button>
+    <label for="inss">INSS: </label>
+    <input type="text" name="inss" id="inss">
+    <label for="ir">IR: </label>
+    <input type="text" name="ir" id="ir">
+    <label for="SalLiq">Salário Líquido: </label>
+    <input type="text" name="SalLiq" id="SalLiq">
+</div>    
+
+<script>
+    /*
+    let var1="Olá Mundo!";
+    let var2=10;
+    let var3=5.33;
+    let var4=[4,3,5,8];
+    let var5=[
+        [1,"email1@educ.com"],
+        [2,"email2@educ.com"],
+        [3,"email3@educ.com"]
+    ]
+
+    for(i=0;i<var5.length;i++) {
+        console.log(var5[i]); 
+    }
+    
+    i=0;
+    while (i<var5.length) {
+        console.log(var5[i]); 
+        i++;       
+    }
+
+    console.log(var5[1][1]);
+
+*/
+
+    // Calculo de IR
+    // INSS = Salario Bruto * %Desconto
+    // SB = Salario Bruto - INSS
+    // IR = Salario Base (SB) * %Desconto - Desconto Padrão
+    
+    // Tabela INSS
+    //    0    - 1320.00  7.5%   0.00
+    // 1320.01 - 2571.29  9.0%  19.80
+    // 2571.30 - 3845.94 12.0%  96.94
+    // 3856.95 - 7507.49 14.0% 174.08
+    // acima 7507.49   1051.05
+
+    // Tabela IR
+    // 0       - 2112.00  0.0%    0.00
+    // 2112.01 - 2826.65  7.5%  158.40
+    // 2826.66 - 3751.06 15.0%  370.40
+    // 3751.07 - 4664.68 22.5%  651.73
+    // Acima de 4664.68  27.5%  884.96
+
+    // Salario Bruto = 20000
+    // INSS = 7507.49 * 0.14 = 1051.05
+    // SB = 20000 - 1051.05 = 18948.95
+    // IR = 18948.95 * 0.275 - 884.96 = 5210.96 - 884.96 = 4326,00
+
+    // function soma(a, b) {
+
+    //     return a+b;
+    // }
+
+    function calcinss(SalBruto) {
+        // INSS
+        var percINSS=0.075;
+        var descinss=0.00;
+
+        if (SalBruto>1320) {
+            if(SalBruto>2571.29) {
+                if(SalBruto>3845.94) {
+                    if(SalBruto>7507.49) {
+                        percINSS=0.14;
+                        descinss=174.08;
+                    }
+                    else {
+                        percINSS=0.14;
+                        descinss=174.08; 
+                    }
+                }
+                else {
+                    percINSS=0.12;
+                    descinss=96.94;
+                }
+            }
+            else {
+                percINSS=0.09;
+                descinss=19.80;
+            }
+        }
+  
+        INSS=SalBruto*percINSS-descinss;
+        if(INSS>1051.05) {
+            INSS=1051.05;
+        }
+
+        return INSS;
+    }
+
+    function calcir(SalBase) {
+        var percIR=0.00;
+        var descir=0.00;
+        if (SalBase>2112.00) {
+            if(SalBase>2826.65) {
+                if(SalBase>3751.06) {
+                    if(SalBase>4664.68) {
+                        percIR=0.275;
+                        descir=884.96;
+                    }
+                    else {
+                        percIR=0.225;
+                        descir=651.73; 
+                    }
+                }
+                else {
+                    percIR=0.15;
+                    descir=370.40;
+                }
+            }
+            else {
+                percIR=0.075;
+                descir=158.40;
+            }
+        }  
+
+        IR = SalBase * percIR - descir;
+
+
+        return IR;
+    }
+
+
+    var SalBruto=20000;
+    inss = calcinss(SalBruto);
+
+    var SalBase=SalBruto-inss;
+
+    ir = calcir(SalBase);
+
+    function salliq() {
+        var SalBruto = document.getElementById("SalBruto").value;
+        inss=calcinss(SalBruto);
+        inss=(Math.floor(inss*100)/100);
+        document.getElementById("inss").value = inss;
+        var SalBase = SalBruto - inss;
+        ir=calcir(SalBase);
+        ir=(Math.floor(ir*100)/100);
+        document.getElementById("ir").value = ir;       
+        var SalLiq = SalBruto - inss - ir;
+        document.getElementById("SalLiq").value = SalLiq;       
+    
+      
+
+
+    }
+
+
+    
+
+
+</script>    
+</body>
+</html>
